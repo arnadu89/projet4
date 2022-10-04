@@ -31,7 +31,7 @@ class Application:
         # Ajout 8 joueurs au tournoi
         [tournoi_instance.ajouter_joueur(p) for p in joueurs]
 
-        print(tournoi_instance)
+        # print(tournoi_instance)
         # Jouer les tours
         for i in range(tournoi_instance.nombre_tours):
             tournoi_instance.lancer_tour_suivant()

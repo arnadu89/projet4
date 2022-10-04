@@ -36,7 +36,7 @@ class Tournoi:
     def ajouter_joueur(self, joueur):
         self.joueurs.append(joueur)
 
-    def generer_paires(self):
+    def generer_paires_old(self):
         # Premier tour
         if len(self.tournees) == 1:
             sorted_joueurs = sorted(self.joueurs, key=lambda j: j.classement, reverse=True)
@@ -71,7 +71,40 @@ class Tournoi:
 
             self.paires_already_played.append(paire)
 
-        print(f"Tour {len(self.tournees)} : {len(paires)} paires")
+        return paires
+
+    def generer_paires(self):
+        # Premier tour
+        if len(self.tournees) == 1:
+            sorted_joueurs = sorted(self.joueurs, key=lambda j: j.classement, reverse=True)
+            paires = zip(
+                sorted_joueurs[:int(Tournoi.nombre_joueurs / 2)],
+                sorted_joueurs[int(Tournoi.nombre_joueurs / 2):]
+            )
+            paires = list(paires)
+            self.paires_already_played.extend(paires)
+        else:  # Tours suivants
+            # On tri les joueurs selon leur score/classement
+            mixed_joueurs = []
+            for joueur in self.joueurs:
+                score_joueur = next(score[1] for score in self.scores if score[0] is joueur)
+                print(f"score de {joueur} est {score_joueur}")
+                mixed_joueurs.append((joueur, score_joueur, joueur.classement))
+            sorted_joueurs_score = sorted(mixed_joueurs, key=lambda j: (j[1], j[2]), reverse=True)
+            sorted_joueurs = [elm[0] for elm in sorted_joueurs_score]
+
+            # On aparie les joueurs séquentiellement sauf s'ils ont déjà joué avec leur paire,
+            # dans ce cas on échange avec le suivant et on continue
+            for i in range(0,5,2):
+                paire = [sorted_joueurs[i], sorted_joueurs[i+1]]
+                if paire in self.paires_already_played or\
+                        paire[::-1] in self.paires_already_played:
+                    sorted_joueurs[i+1], sorted_joueurs[i+2] = sorted_joueurs[i+2], sorted_joueurs[i+1]
+
+            paires = list(zip(sorted_joueurs[::2], sorted_joueurs[1::2]))
+
+            self.paires_already_played.append(paire)
+
         return paires
 
     def lancer_tour_suivant(self):
