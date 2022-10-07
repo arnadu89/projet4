@@ -1,25 +1,26 @@
 class Player:
-    genres = [
+    genders = [
         "Autre",
         "Femme",
         "Homme"
     ]
 
-    def __init__(self, nom, prenom, date_naissance, genre, rank):
-        self.nom = nom
-        self.prenom = prenom
-        self.date_naissance = date_naissance
-        self._genre = genre
-        self._rank = rank
+    def __init__(self, lastname, firstname, birthdate, gender, rank):
+        self.lastname = lastname
+        self.firstname = firstname
+        self.birthdate = birthdate
+        self._gender = gender
+        self._rank = None
+        self.rank = rank
 
     @property
-    def genre(self):
-        return self.genre
+    def gender(self):
+        return self.gender
 
-    @genre.setter
-    def genre(self, value):
-        if value in Player.genres:
-            self.genre = value
+    @gender.setter
+    def gender(self, value):
+        if value in Player.genders:
+            self.gender = value
 
     @property
     def rank(self):
@@ -31,5 +32,5 @@ class Player:
             self._rank = value
 
     def __repr__(self):
-        return f"{self.nom} {self.prenom} {self.date_naissance} {self.rank}"
+        return f"{self.lastname} {self.firstname} {self.birthdate} {self.rank}"
     

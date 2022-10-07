@@ -8,6 +8,7 @@ class Application:
     routes = {
         "main_menu" : MainMenuController.main_menu,
         "player_list" : PlayerController.player_list,
+        "player_create" : PlayerController.player_create,
     }
 
     def __init__(self):
