@@ -29,22 +29,30 @@ class Application:
         # [print(p) for p in joueurs]
 
         # Ajout 8 joueurs au tournoi
-        [tournoi_instance.ajouter_joueur(p) for p in joueurs]
+        [tournoi_instance.add_player(p) for p in joueurs]
 
         # print(tournoi_instance)
         # Jouer les tours
-        for i in range(tournoi_instance.nombre_tours):
+        scores_name = [
+            "first",
+            "second",
+            "draw"
+        ]
+        for i in range(tournoi_instance.number_tours):
             tournoi_instance.lancer_tour_suivant()
             # print(tournoi_instance)
 
             # valider les matchs du tour
             last_turn = tournoi_instance.tournees[-1]
             for match_index in range(4):
-                last_turn.set_match_score(match_index, random.randrange(-1, 2))
+                last_turn.set_match_score(match_index, random.choice(scores_name))
 
             tournoi_instance.finir_tour_courant()
             print(tournoi_instance)
 
+            print(f"matchs : {tournoi_instance.get_matchs()}")
+
     @classmethod
     def run(cls):
-        Application.demo()
+        # Application.demo()
+        pass

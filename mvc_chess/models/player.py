@@ -5,12 +5,12 @@ class Player:
         "Homme"
     ]
 
-    def __init__(self, nom, prenom, date_naissance, genre, classement):
+    def __init__(self, nom, prenom, date_naissance, genre, rank):
         self.nom = nom
         self.prenom = prenom
         self.date_naissance = date_naissance
         self._genre = genre
-        self._classement = classement
+        self._rank = rank
 
     @property
     def genre(self):
@@ -22,14 +22,14 @@ class Player:
             self.genre = value
 
     @property
-    def classement(self):
-        return self._classement
+    def rank(self):
+        return self._rank
 
-    @classement.setter
-    def classement(self, value):
+    @rank.setter
+    def rank(self, value):
         if value >= 0:
-            self._classement = value
+            self._rank = value
 
     def __repr__(self):
-        return f"{self.nom} {self.prenom} {self.date_naissance} {self.classement}"
+        return f"{self.nom} {self.prenom} {self.date_naissance} {self.rank}"
     
