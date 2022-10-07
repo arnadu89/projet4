@@ -1,7 +1,20 @@
-from models import player, tournoi
+import subprocess
+from models import player, tournoi, models_manager
+from mvc_chess.controllers.main_menu_controller import MainMenuController
+from mvc_chess.controllers.player_controller import PlayerController
 
 
 class Application:
+    routes = {
+        "main_menu" : MainMenuController.main_menu,
+        "player_list" : PlayerController.player_list,
+    }
+
+    def __init__(self):
+        self.route = "main_menu"
+        self.route_params = None
+        self.exit = False
+
     @classmethod
     def demo(cls):
         import random
@@ -52,7 +65,25 @@ class Application:
 
             print(f"matchs : {tournoi_instance.get_matchs()}")
 
-    @classmethod
-    def run(cls):
+    def run(self):
         # Application.demo()
-        pass
+
+        # loading ModelsManager
+        mm = models_manager.ModelsManager()
+        models_manager.ModelsManager.demo()
+
+        while not self.exit:
+            subprocess.call("clear", shell=True)
+
+            controller_method = self.routes[self.route]
+
+            next_route, next_params = controller_method(
+                mm,
+                self.route_params
+            )
+
+            self.route = next_route
+            self.route_params = next_params
+
+            if next_route == "quit":
+                self.exit = True
