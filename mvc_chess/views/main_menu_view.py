@@ -1,7 +1,8 @@
 class MainMenuView:
     @classmethod
     def main_menu_view(cls):
-        print(f"-- MVC Chess --\n")
-        print(f"1. List players")
-        print(f"Q. Quit")
+        print("-- MVC Chess --\n")
+        print("1. List players")
+        print("2. List tournaments")
+        print("Q. Quit")
         return input("Choice : ")

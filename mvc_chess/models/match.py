@@ -1,40 +1,62 @@
-class Match(tuple):
-    def __new__(cls, players_pair):
-        tuple_args = (
-            [players_pair[0], None],
-            [players_pair[1], None]
-        )
-        return super(Match, cls).__new__(cls, tuple(tuple_args))
+class Match:
+    score_names = [
+        "first",
+        "second",
+        "draw"
+    ]
+
+    def __init__(self, players_pair):
+        self.players = players_pair
+        self.scores = [0, 0]
 
     def get_first_player(self):
-        return self[0][0]
+        return self.players[0]
 
     def get_second_player(self):
-        return self[1][0]
+        return self.players[1]
 
     def get_players(self):
-        return self[0][0], self[1][0]
+        return self.players
 
     def get_score_first_player(self):
-        return self[0][0]
+        return self.scores[0]
 
     def get_score_second_player(self):
-        return self[1][0]
+        return self.scores[0]
 
     def get_scores(self):
-        return self[0][1], self[1][1]
+        return self.scores
 
     def set_score(self, score):
         match score:
             case "first":
-                self[0][1] = 1
-                self[1][1] = -1
+                self.scores[0] = 1
+                self.scores[1] = -1
             case "second":
-                self[0][1] = -1
-                self[1][1] = 1
+                self.scores[0] = -1
+                self.scores[1] = 1
             case "draw":
-                self[0][1] = 1/2
-                self[1][1] = 1/2
+                self.scores[0] = 1/2
+                self.scores[1] = 1/2
             case _:
-                raise Exception(f"Error : Score in match must be first, second or draw "
+                scores_names = ''.join([score_name for score_name in Match.score_names])
+                raise Exception(f"Error : Score in match must be {scores_names}"
                                 f": {score} given")
+
+    def is_finish(self):
+        return self.scores[0] != 0
+
+    def __repr__(self):
+        player_1, player_2 = self.get_players()
+        score_player_1, score_player_2 = self.get_scores()
+        repr = f"{player_1} VS {player_2}"
+        if self.is_finish():
+            if score_player_1 == 1:
+                repr += f" -> {player_1} wins"
+            elif 0 < score_player_1 < 1:
+                repr += " -> draw"
+            else:
+                repr += f" -> {player_2} wins"
+        else:
+            repr += " -> waiting match result"
+        return repr

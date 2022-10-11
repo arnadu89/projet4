@@ -6,6 +6,7 @@ class Player:
     ]
 
     def __init__(self, lastname, firstname, birthdate, gender, rank):
+        self.id = None
         self.lastname = lastname
         self.firstname = firstname
         self.birthdate = birthdate
@@ -15,12 +16,12 @@ class Player:
 
     @property
     def gender(self):
-        return self.gender
+        return self._gender
 
     @gender.setter
     def gender(self, value):
         if value in Player.genders:
-            self.gender = value
+            self._gender = value
 
     @property
     def rank(self):
@@ -31,6 +32,11 @@ class Player:
         if value >= 0:
             self._rank = value
 
+    def set_id(self, new_id):
+        try:
+            self.id = int(new_id)
+        except ValueError as error:
+            raise ValueError(error)
+
     def __repr__(self):
         return f"{self.lastname} {self.firstname} {self.birthdate} {self.rank}"
-    

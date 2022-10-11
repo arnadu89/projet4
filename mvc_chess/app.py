@@ -1,14 +1,18 @@
 import subprocess
-from models import player, tournoi, models_manager
+from models import player, tournament, models_manager
 from mvc_chess.controllers.main_menu_controller import MainMenuController
 from mvc_chess.controllers.player_controller import PlayerController
+from mvc_chess.controllers.tournament_controller import TournamentController
 
 
 class Application:
     routes = {
-        "main_menu" : MainMenuController.main_menu,
-        "player_list" : PlayerController.player_list,
-        "player_create" : PlayerController.player_create,
+        "main_menu": MainMenuController.main_menu,
+        "player_list": PlayerController.player_list,
+        "player_create": PlayerController.player_create,
+        "player_update": PlayerController.player_update,
+        "tournament_list": TournamentController.tournament_list,
+        "tournament_manage": TournamentController.tournament_manage,
     }
 
     def __init__(self):
@@ -20,14 +24,14 @@ class Application:
     def demo(cls):
         import random
         # Créer un nouveau tournoi
-        tournoi_datas = {
-            'nom' : 'Tournoi Régional 1',
-            'lieu': 'Paris',
+        tournament_datas = {
+            'name': 'Tournoi Régional 1',
+            'location': 'Paris',
             'date': '24/03/2021',
-            'controle_temps': 'Bullet',
+            'time_control': 'Bullet',
             'description': 'Tournoi régional de paris junior',
         }
-        tournoi_instance = tournoi.Tournoi(**tournoi_datas)
+        tournament_instance = tournament.Tournament(**tournament_datas)
 
         # Créer des joueurs
         joueurs = [
@@ -43,28 +47,28 @@ class Application:
         # [print(p) for p in joueurs]
 
         # Ajout 8 joueurs au tournoi
-        [tournoi_instance.add_player(p) for p in joueurs]
+        [tournament_instance.add_player(p) for p in joueurs]
 
-        # print(tournoi_instance)
+        # print(tournament_instance)
         # Jouer les tours
         scores_name = [
             "first",
             "second",
             "draw"
         ]
-        for i in range(tournoi_instance.number_tours):
-            tournoi_instance.lancer_tour_suivant()
-            # print(tournoi_instance)
+        for i in range(tournament_instance.number_tours):
+            tournament_instance.begin_next_turn()
+            # print(tournament_instance)
 
             # valider les matchs du tour
-            last_turn = tournoi_instance.tournees[-1]
+            last_turn = tournament_instance.turns[-1]
             for match_index in range(4):
                 last_turn.set_match_score(match_index, random.choice(scores_name))
 
-            tournoi_instance.finir_tour_courant()
-            print(tournoi_instance)
+            tournament_instance.end_current_turn()
+            print(tournament_instance)
 
-            print(f"matchs : {tournoi_instance.get_matchs()}")
+            # print(f"matchs : {tournament_instance.get_matchs()}")
 
     def run(self):
         # Application.demo()

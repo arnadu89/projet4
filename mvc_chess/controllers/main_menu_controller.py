@@ -9,6 +9,8 @@ class MainMenuController:
         match choice:
             case "1":
                 next_route = "player_list"
+            case "2":
+                next_route = "tournament_list"
             case "q":
                 next_route = "quit"
             case _:

@@ -1,11 +1,11 @@
 import random
 import mvc_chess.models.player as player
-import mvc_chess.models.tournoi as tournoi
+import mvc_chess.models.tournament as tournament
 
 
 class ModelsManager:
     players = []
-    tournois = []
+    tournaments = []
 
     @classmethod
     def demo(cls):
@@ -21,14 +21,18 @@ class ModelsManager:
             player.Player("echecs", "joueur 8", "08/02/1999", "Autre", random.randint(10, 80) * 10),
         ]
 
+        for player_id, player_instance in enumerate(players):
+            player_instance.set_id(player_id)
+
         ModelsManager.players.extend(players)
 
         # Tournoi
-        tournoi_datas = {
-            'nom': 'Tournoi Régional 1',
-            'lieu': 'Paris',
+        tournament_datas = {
+            'name': 'Tournoi Régional 1',
+            'location': 'Paris',
             'date': '24/03/2021',
-            'controle_temps': 'Bullet',
+            'time_control': 'Bullet',
             'description': 'Tournoi régional de paris junior',
         }
-        ModelsManager.tournois.append(tournoi.Tournoi(**tournoi_datas))
+        ModelsManager.tournaments.append(tournament.Tournament(**tournament_datas))
+        ModelsManager.tournaments[-1].set_id(0)
