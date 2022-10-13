@@ -13,6 +13,8 @@ class Application:
         "player_update": PlayerController.player_update,
         "tournament_list": TournamentController.tournament_list,
         "tournament_manage": TournamentController.tournament_manage,
+        "tournament_assign_player": TournamentController.tournament_assign_player,
+        "tournament_valid_match": TournamentController.tournament_valid_match,
     }
 
     def __init__(self):

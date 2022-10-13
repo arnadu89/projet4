@@ -16,6 +16,12 @@ class Turn:
     def is_finish(self):
         return self.end_date_time is not None
 
+    def is_all_matchs_finish(self):
+        for match in self.matchs:
+            if not match.is_finish():
+                return False
+        return True
+
     def create_match(self, players_pair):
         match = Match(players_pair)
         self.matchs.append(match)

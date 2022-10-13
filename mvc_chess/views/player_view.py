@@ -11,7 +11,8 @@ class PlayerView:
         else:
             print("ID\tLastname\t\t\tFirstname\t\t\tBirthdate\t\t\tRank")
             for player in players:
-                print(f"{player.id}\t{player.lastname}\t\t\t{player.firstname}\t\t\t{player.birthdate}\t\t\t{player.rank}")
+                print(f"{player.id}\t{player.lastname}\t\t\t{player.firstname}\t\t\t"
+                      f"{player.birthdate}\t\t\t{player.rank}")
 
         print("\n")
         print("1. Create a new player")
@@ -21,6 +22,11 @@ class PlayerView:
         print("M. Main menu")
         print("Q. Quit")
         return input("Choice : ")
+
+    @classmethod
+    def player_display(cls, player):
+        print(f"{player.id}\t{player.lastname}\t\t\t{player.firstname}\t\t\t"
+              f"{player.birthdate}\t\t\t{player.rank}")
 
     @classmethod
     def player_create_view(cls):

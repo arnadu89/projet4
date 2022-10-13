@@ -2,6 +2,11 @@ import mvc_chess.models.turn as turn
 
 
 class Tournament:
+    states = {
+        "NOT_STARTED": "Non démarré",
+        "IN_PROGRESS": "En cours",
+        "FINISHED": "Terminé"
+    }
     time_control = [
         "Bullet",
         "Blitz",
@@ -52,7 +57,9 @@ class Tournament:
             mixed_players = []
             for player in self.players:
                 mixed_players.append((player, self.get_player_score(player), player.rank))
-            sorted_players_score = sorted(mixed_players, key=lambda j: (j[1], j[2]), reverse=True)
+
+            print(mixed_players)
+            sorted_players_score = sorted(mixed_players, key=lambda elm: (elm[1], elm[2]), reverse=True)
             sorted_players = [elm[0] for elm in sorted_players_score]
 
             # On aparie les joueurs dans l'ordre des scores/rank en décalant si le match a déjà eu lieu
@@ -86,6 +93,9 @@ class Tournament:
         self.update_scores()
         self.turns[-1].mark_as_complete()
 
+    def get_current_turn(self):
+        return self.get_turns()[-1] if self.get_turns() else None
+
     def update_scores(self):
         self.scores = []
         all_matchs = [match
@@ -102,7 +112,8 @@ class Tournament:
             self.scores.append((player, player_score))
 
     def get_player_score(self, player):
-        return next(score for score in self.scores if score[0] == player)[1]
+        player_score = [score for score in self.scores if score[0] is player]
+        return player_score[0][1] if player_score else 0
 
     def get_players_by_name(self):
         return sorted(self.players, key=lambda p: p.nom)
@@ -121,12 +132,12 @@ class Tournament:
 
     def state(self):
         if not self.turns:
-            state = "Non démarré"
+            state = Tournament.states["NOT_STARTED"]
         elif len(self.turns) == self.number_tours and\
                 self.turns[-1].is_finish():
-            state = "Terminé"
+            state = Tournament.states["FINISHED"]
         else:
-            state = "En cours"
+            state = Tournament.states["IN_PROGRESS"]
 
         return state
 

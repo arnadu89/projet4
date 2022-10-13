@@ -38,5 +38,8 @@ class Player:
         except ValueError as error:
             raise ValueError(error)
 
+    def is_valid(self,):
+        pass
+
     def __repr__(self):
         return f"{self.lastname} {self.firstname} {self.birthdate} {self.rank}"

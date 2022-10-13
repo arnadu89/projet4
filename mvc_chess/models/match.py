@@ -22,7 +22,7 @@ class Match:
         return self.scores[0]
 
     def get_score_second_player(self):
-        return self.scores[0]
+        return self.scores[1]
 
     def get_scores(self):
         return self.scores

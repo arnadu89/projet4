@@ -1,3 +1,6 @@
+import mvc_chess.views.player_view as player_view
+
+
 class TournamentView:
     @classmethod
     def tournament_list_view(cls, tournaments):
@@ -15,9 +18,9 @@ class TournamentView:
                     f"\t\t{len(tournament.players)}/{tournament.number_players}"
                     f"\t\t\t{tournament.state()}")
 
-        print("\n")
-        print("1. Create a new tournament")
-        print("2. Manage a tournament")
+        print("\n1. Create a new tournament")
+        if tournaments:
+            print("2. Manage a tournament")
         print("M. Main menu")
         print("Q. Quit")
         return input("Choice : ")
@@ -30,17 +33,95 @@ class TournamentView:
         for player_tournament_number in range(tournament.number_players):
             try:
                 current_player = tournament.players[player_tournament_number]
+                print(f"Player {player_tournament_number} : {current_player} "
+                      f"- Score : {tournament.get_player_score(current_player)}")
             except IndexError:
                 current_player = "Player not assigned"
-            print(f"Player {player_tournament_number} : {current_player}")
+                print(f"Player {player_tournament_number} : {current_player}")
+
+        if tournament.get_turns():
+            print("\nRounds :")
+            for turn in tournament.get_turns():
+                print(turn)
 
     @classmethod
-    def tournament_manage_view(cls, tournament):
+    def _tournament_display_short(cls, tournament):
+        print(f"Tournament : {tournament.name} - {tournament.location} - {tournament.date}")
+
+    @classmethod
+    def tournament_manage_with_not_all_players_view(cls, tournament):
+        print("-- MVC Chess --\n")
+        TournamentView._tournament_display(tournament)
+
+        print("\nYou must add player to start tournament")
+        print("\n")
+        print("1. List tournaments")
+        print("2. Add player")
+        print("M. Main menu")
+        print("Q. Quit")
+        return input("Choice : ")
+
+    @classmethod
+    def tournament_manage_not_started_view(cls, tournament):
+        print("-- MVC Chess --\n")
+        TournamentView._tournament_display(tournament)
+
+        print("\nYou can now start tournament")
+        print("\n")
+        print("1. List tournaments")
+        print("2. Start tournament")
+        print("M. Main menu")
+        return input("Choice : ")
+
+    @classmethod
+    def tournament_manage_started_waiting_next_turn(cls, tournament):
         print("-- MVC Chess --\n")
         TournamentView._tournament_display(tournament)
 
         print("\n")
         print("1. List tournaments")
+        print("2. Begin next turn")
         print("M. Main menu")
-        print("Q. Quit")
         return input("Choice : ")
+
+    @classmethod
+    def tournament_manage_started_turn_in_progress_view(cls, tournament):
+        print("-- MVC Chess --\n")
+        TournamentView._tournament_display(tournament)
+
+        print("\n")
+        print("1. List tournaments")
+        for match_index, match in enumerate(tournament.get_current_turn().matchs):
+            if not match.is_finish():
+                print(f"{match_index + 2}. Set result for the match {match_index + 1}")
+        if tournament.get_current_turn().is_all_matchs_finish():
+            print("6. Mark current turn as finish")
+        print("M. Main menu")
+        return input("Choice : ")
+
+    @classmethod
+    def tournament_assign_player_view(cls, tournament, players):
+        print("-- MVC Chess --\n")
+        TournamentView._tournament_display_short(tournament)
+
+        if not players:
+            print(f"No available player in the base.")
+
+        print("Players list :")
+        for player in players:
+            player_view.PlayerView.player_display(player)
+
+        print("\n")
+        return input("Add a player with ID : ")
+
+    @classmethod
+    def tournament_valid_match(cls, tournament, match):
+        print("-- MVC Chess --\n")
+        TournamentView._tournament_display_short(tournament)
+
+        print(match)
+
+        print(f"1. The winner is : {match.get_first_player()}")
+        print(f"2. The winner is : {match.get_second_player()}")
+        print(f"3. The match result is a draw")
+        return input("Set match result : ")
