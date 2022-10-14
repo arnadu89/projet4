@@ -58,7 +58,6 @@ class Tournament:
             for player in self.players:
                 mixed_players.append((player, self.get_player_score(player), player.rank))
 
-            print(mixed_players)
             sorted_players_score = sorted(mixed_players, key=lambda elm: (elm[1], elm[2]), reverse=True)
             sorted_players = [elm[0] for elm in sorted_players_score]
 
@@ -155,7 +154,7 @@ class Tournament:
             repr += f"\t{player.lastname}\t{player.firstname}\t{player.rank}\t{self.get_player_score(player)}\n"
 
         repr += "\n"
-        for turn in self.turns:
-            repr += f"{turn} \n"
+        for tournament_turn in self.turns:
+            repr += f"{tournament_turn} \n"
 
         return repr

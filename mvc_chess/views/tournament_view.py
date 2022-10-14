@@ -20,9 +20,53 @@ class TournamentView:
 
         print("\n1. Create a new tournament")
         if tournaments:
-            print("2. Manage a tournament")
+            print("2. View tournament detail")
+            print("3. Manage a tournament")
         print("M. Main menu")
         print("Q. Quit")
+        return input("Choice : ")
+
+    @classmethod
+    def tournament_read_view(cls, tournament,
+                             show_players=True,
+                             show_turns=True,
+                             show_matchs=True):
+        print("-- MVC Chess --\n")
+
+        print("-- Tournament detail :")
+        print(f"Name : {tournament.name} - Location : {tournament.location} - Date : {tournament.date}")
+        print(f"State : {tournament.state()}")
+        print(f"Description : {tournament.description}")
+        if show_players:
+            print(f"Players : {len(tournament.players)}/{tournament.number_players}")
+            for player_tournament_number in range(tournament.number_players):
+                try:
+                    current_player = tournament.players[player_tournament_number]
+                    print(f"-> {current_player} "
+                          f"- Score : {tournament.get_player_score(current_player)}")
+                except IndexError:
+                    current_player = "Player not assigned"
+                    print(f"-> {current_player}")
+
+        if show_turns:
+            if tournament.get_turns():
+                print("\nRounds :")
+                for turn in tournament.get_turns():
+                    print(f"{turn.name} -", end=" ")
+                    print(f"Start at : {turn.start_date_time} "
+                          f"- End at : {turn.end_date_time if turn.end_date_time else 'Turn not ended yet'}")
+                    if show_matchs:
+                        for match in turn.matchs:
+                            print(f"\t{match}")
+            else:
+                print("\nRounds : No rounds launched")
+
+        print("\n1. List tournaments")
+        print("2. View this tournament with players sorted in alphabetical order")
+        print("3. View this tournament with players sorted by rank")
+        print("4. View this tournament without matchs (only turns)")
+        print("5. Manage this tournament")
+        print("M. Main menu")
         return input("Choice : ")
 
     @classmethod
@@ -100,12 +144,22 @@ class TournamentView:
         return input("Choice : ")
 
     @classmethod
+    def tournament_manage_finished(cls, tournament):
+        print("-- MVC Chess --\n")
+        TournamentView._tournament_display(tournament)
+
+        print("\n")
+        print("1. List tournaments")
+        print("M. Main menu")
+        return input("Choice : ")
+
+    @classmethod
     def tournament_assign_player_view(cls, tournament, players):
         print("-- MVC Chess --\n")
         TournamentView._tournament_display_short(tournament)
 
         if not players:
-            print(f"No available player in the base.")
+            print("No available player in the base.")
 
         print("Players list :")
         for player in players:
@@ -123,5 +177,5 @@ class TournamentView:
 
         print(f"1. The winner is : {match.get_first_player()}")
         print(f"2. The winner is : {match.get_second_player()}")
-        print(f"3. The match result is a draw")
+        print("3. The match result is a draw")
         return input("Set match result : ")

@@ -29,7 +29,7 @@ class PlayerController:
                 try:
                     input_id = int(input("ID of the player to update : "))
                 except ValueError:
-                    print(f"Error : ID must be an integer")
+                    print("Error : ID must be an integer")
                     next_route = "player_list"
                 else:
                     next_route = "player_update"
