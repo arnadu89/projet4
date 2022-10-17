@@ -6,7 +6,11 @@ class PlayerController:
     @classmethod
     def player_list(cls, models_manager, route_params=None):
         players = models_manager.players
-        message = None
+        try:
+            if "message" in route_params.keys():
+                message = route_params["message"]
+        except AttributeError:
+            message = None
 
         if route_params and "player_sort" in route_params:
             player_sort = route_params["player_sort"]
@@ -56,17 +60,20 @@ class PlayerController:
     def player_create(cls, models_manager, route_params=None):
         datas = PlayerView.player_create_view()
 
-        datas["rank"] = int(datas["rank"])
-        new_player = Player(**datas)
-        # todo : validating datas of new player with is_valid method on player model object
+        if Player.is_valid(**datas):
+            all_players = models_manager.players
+            datas["id"] = len(all_players)
+            datas["rank"] = int(datas["rank"])
+            new_player = Player(**datas)
 
-        all_players = models_manager.players
-        new_player.set_id(len(all_players))
+            all_players.append(new_player)
+            models_manager.save()
 
-        all_players.append(new_player)
-
-        next_route = "player_list"
-        next_params = None
+            next_route = "player_list"
+            next_params = None
+        else:
+            next_route = "player_list"
+            next_params = {"message": "Error during player creation"}
 
         return next_route, next_params
 

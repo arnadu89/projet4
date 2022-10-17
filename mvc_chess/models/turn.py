@@ -7,11 +7,11 @@ class Turn:
         self.name = name
         self.matchs = []
 
-        self.start_date_time = datetime.datetime.now()
+        self.start_date_time = datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S")
         self.end_date_time = None
 
     def mark_as_complete(self):
-        self.end_date_time = datetime.datetime.now()
+        self.end_date_time = datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S")
 
     def is_finish(self):
         return self.end_date_time is not None
@@ -34,11 +34,33 @@ class Turn:
         match = self.matchs[match_index]
         match.set_score(score)
 
+    def serialize(self):
+        serialized_turn = {
+            "name": self.name,
+            "matchs": [
+                match.serialize() for match in self.matchs
+            ],
+            "start_date_time": self.start_date_time,
+            "end_date_time": self.end_date_time,
+        }
+        return serialized_turn
+
+    @classmethod
+    def deserialize(cls, serialized_turn):
+        turn = Turn(serialized_turn["name"])
+        turn.matchs = [
+            Match.deserialize(serialized_match)
+            for serialized_match in serialized_turn["matchs"]
+        ]
+        turn.start_date_time = serialized_turn["start_date_time"]
+        turn.end_date_time = serialized_turn["end_date_time"]
+        return turn
+
     def __repr__(self):
         repr = f"{self.name} " \
-               f"- Debut : {self.start_date_time.strftime('%Y-%m-%d %H:%M')}"
+               f"- Debut : {self.start_date_time}"
         if self.end_date_time:
-            repr += f" - Fin : {self.end_date_time.strftime('%Y-%m-%d %H:%M')})"
+            repr += f" - Fin : {self.end_date_time})"
         repr += "\n"
         for match in self.matchs:
             repr += f"{match}"

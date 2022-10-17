@@ -1,3 +1,6 @@
+from mvc_chess.models.player import Player
+
+
 class Match:
     score_names = [
         "first",
@@ -45,6 +48,25 @@ class Match:
 
     def is_finish(self):
         return self.scores[0] != 0
+
+    def serialize(self):
+        serialized_match = {
+            "players": [
+                player.serialize() for player in self.players
+            ],
+            "scores": self.scores,
+        }
+        return serialized_match
+
+    @classmethod
+    def deserialize(cls, serialized_match):
+        deserialized_players = [
+            Player.deserialize(serialized_player)
+            for serialized_player in serialized_match["players"]
+        ]
+        match = Match(deserialized_players)
+        match.scores = serialized_match["scores"]
+        return match
 
     def __repr__(self):
         player_1, player_2 = self.get_players()

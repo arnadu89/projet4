@@ -114,25 +114,42 @@ class TournamentController:
             next_route = "tournament_list"
             return next_route, None
 
+        # Manage tournament
         if len(tournament.players) < tournament.number_players:
-            print("STATE >>>>>>>>>> Tournoi non démarré - manque de joueurs")
-            next_route, next_params = TournamentController._manage_tournament_with_not_all_players(tournament)
+            # Manage not started tournament - not all players assigned
+            next_route, next_params = TournamentController._manage_tournament_with_not_all_players(
+                models_manager,
+                tournament
+            )
         elif tournament.state() == tournament.states["NOT_STARTED"]:
-            print("STATE >>>>>>>>>> Tournoi non démarré - joueurs OK")
-            next_route, next_params = TournamentController._manage_tournament_not_started(tournament)
+            # Manage not started tournament - all player - ready to start
+            next_route, next_params = TournamentController._manage_tournament_not_started(
+                models_manager,
+                tournament
+            )
         elif tournament.state() == tournament.states["FINISHED"]:
-            next_route, next_params = TournamentController._manage_tournament_finished(tournament)
+            # Manage finish tournament - all turns are finished
+            next_route, next_params = TournamentController._manage_tournament_finished(
+                models_manager,
+                tournament
+            )
         elif tournament.state() == tournament.states["IN_PROGRESS"] and not tournament.get_current_turn().is_finish():
-            print("STATE >>>>>>>>>> Tournoi Démarré - Tour en cours non fini")
-            next_route, next_params = TournamentController._manage_tournament_started_turn_in_progress(tournament)
+            # Manage started tournament - current turn not finish
+            next_route, next_params = TournamentController._manage_tournament_started_turn_in_progress(
+                models_manager,
+                tournament
+            )
         elif tournament.state() == tournament.states["IN_PROGRESS"] and tournament.get_current_turn().is_finish():
-            print("STATE >>>>>>>>>> Tournoi Démarré - Tour en cours fini")
-            next_route, next_params = TournamentController._manage_tournament_started_waiting_next_turn(tournament)
+            # Manage started tournament - current turn finish waiting for next turn to br started
+            next_route, next_params = TournamentController._manage_tournament_started_waiting_next_turn(
+                models_manager,
+                tournament
+            )
 
         return next_route, next_params
 
     @classmethod
-    def _manage_tournament_with_not_all_players(cls, tournament):
+    def _manage_tournament_with_not_all_players(cls, models_manager, tournament):
         choice = TournamentView.tournament_manage_with_not_all_players_view(tournament)
 
         match choice:
@@ -152,7 +169,7 @@ class TournamentController:
         return next_route, next_params
 
     @classmethod
-    def _manage_tournament_not_started(cls, tournament):
+    def _manage_tournament_not_started(cls, models_manager, tournament):
         choice = TournamentView.tournament_manage_not_started_view(tournament)
 
         match choice:
@@ -161,6 +178,7 @@ class TournamentController:
                 next_params = None
             case "2":
                 tournament.begin_next_turn()
+                models_manager.save()
                 next_route = "tournament_manage"
                 next_params = {"id": tournament.id}
             case "m":
@@ -173,7 +191,7 @@ class TournamentController:
         return next_route, next_params
 
     @classmethod
-    def _manage_tournament_started_turn_in_progress(cls, tournament):
+    def _manage_tournament_started_turn_in_progress(cls, models_manager, tournament):
         choice = TournamentView.tournament_manage_started_turn_in_progress_view(tournament)
 
         match choice:
@@ -191,6 +209,7 @@ class TournamentController:
                 current_turn = tournament.get_current_turn()
                 if current_turn.is_all_matchs_finish():
                     tournament.end_current_turn()
+                    models_manager.save()
                 next_route = "tournament_manage"
                 next_params = {"id": tournament.id}
             case "m":
@@ -203,7 +222,7 @@ class TournamentController:
         return next_route, next_params
 
     @classmethod
-    def _manage_tournament_started_waiting_next_turn(cls, tournament):
+    def _manage_tournament_started_waiting_next_turn(cls, models_manager, tournament):
         choice = TournamentView.tournament_manage_started_waiting_next_turn(tournament)
 
         match choice:
@@ -212,6 +231,7 @@ class TournamentController:
                 next_params = None
             case "2":
                 tournament.begin_next_turn()
+                models_manager.save()
                 next_route = "tournament_manage"
                 next_params = {"id": tournament.id}
             case "m":
@@ -224,7 +244,7 @@ class TournamentController:
         return next_route, next_params
 
     @classmethod
-    def _manage_tournament_finished(cls, tournament):
+    def _manage_tournament_finished(cls, models_manager, tournament):
         choice = TournamentView.tournament_manage_finished(tournament)
 
         match choice:
@@ -256,12 +276,15 @@ class TournamentController:
             return next_route, None
 
         # Get players that are not already assign to this tournament
-        assignable_players = [player for player in models_manager.players if player not in tournament.players]
+        assignable_players = [player
+                              for player in models_manager.players
+                              if player.id not in [p.id for p in tournament.players]]
         player_id = TournamentView.tournament_assign_player_view(tournament, assignable_players)
 
         try:
             player = next(player for player in assignable_players if int(player_id) == player.id)
             tournament.add_player(player)
+            models_manager.save()
         except ValueError:
             print("Error : the player ID is not an integer")
             next_route = "tournament_manage"
@@ -326,5 +349,6 @@ class TournamentController:
 
         next_route = "tournament_manage"
         next_params = {"id": tournament.id}
+        models_manager.save()
 
         return next_route, next_params

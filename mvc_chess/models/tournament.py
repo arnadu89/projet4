@@ -1,4 +1,6 @@
 import mvc_chess.models.turn as turn
+from mvc_chess.models.player import Player
+from mvc_chess.models.turn import Turn
 
 
 class Tournament:
@@ -17,31 +19,46 @@ class Tournament:
     def __init__(self,
                  name, location, date,
                  time_control, description,
-                 number_tours=4
+                 number_turns=4
                  ):
         self.id = None
         self.name = name
         self.location = location
         self.date = date
-        self.turns = []
         self.players = []
+        self.turns = []
         self.scores = []
         self._time_control = time_control
         self.description = description
-        self.number_tours = number_tours
+        self.number_turns = number_turns
         self.pairs_already_played = []
 
     @property
     def time_control(self):
-        return self.time_control
+        return self._time_control
 
     @time_control.setter
     def time_control(self, value):
         if value in Tournament.time_control:
             self.time_control = value
 
-    def add_player(self, player):
-        self.players.append(player)
+    def add_player(self, new_player):
+        self.players.append(new_player)
+
+    def has_pairs_already_played(self, two_players):
+        if two_players in self.pairs_already_played or\
+                two_players[::-1] in self.pairs_already_played:
+            return True
+        return False
+
+    def refresh_pairs_already_played(self):
+        all_matchs = [match
+                      for turn in self.turns
+                      for match in turn.matchs]
+        for match in all_matchs:
+            pair = match.get_players()
+            if pair not in self.pairs_already_played:
+                self.pairs_already_played.append(pair)
 
     def generate_pairs(self):
         # Premier tour
@@ -67,8 +84,7 @@ class Tournament:
                 current_player = sorted_players.pop(0)
                 for potential_player in sorted_players:
                     potential_pair = [current_player, potential_player]
-                    if potential_pair not in self.pairs_already_played and \
-                            potential_pair[::-1] not in self.pairs_already_played:
+                    if not self.has_pairs_already_played(potential_pair):
                         pair = potential_pair
                         sorted_players.remove(potential_player)
                         break
@@ -132,7 +148,7 @@ class Tournament:
     def state(self):
         if not self.turns:
             state = Tournament.states["NOT_STARTED"]
-        elif len(self.turns) == self.number_tours and\
+        elif len(self.turns) == self.number_turns and\
                 self.turns[-1].is_finish():
             state = Tournament.states["FINISHED"]
         else:
@@ -145,6 +161,47 @@ class Tournament:
             self.id = int(new_id)
         except ValueError as error:
             raise ValueError(error)
+
+    def serialize(self):
+        serialized_tournament = {
+            "name": self.name,
+            "location": self.location,
+            "date": self.date,
+            "players": [
+                player.serialize() for player in self.players
+            ],
+            "turns": [
+                turn.serialize() for turn in self.turns
+            ],
+            "time_control": self.time_control,
+            "description": self.description,
+            "number_turns": self.number_turns,
+        }
+
+        return serialized_tournament
+
+    @classmethod
+    def deserialize(cls, serialized_tournament):
+        tournament = Tournament(
+            serialized_tournament["name"],
+            serialized_tournament["location"],
+            serialized_tournament["date"],
+            serialized_tournament["time_control"],
+            serialized_tournament["description"],
+            serialized_tournament["number_turns"]
+        )
+
+        for serialized_player in serialized_tournament["players"]:
+            deserialized_player = Player.deserialize(serialized_player)
+            tournament.add_player(deserialized_player)
+
+        for serialized_turn in serialized_tournament["turns"]:
+            deserialized_turn = Turn.deserialize(serialized_turn)
+            tournament.turns.append(deserialized_turn)
+
+        tournament.update_scores()
+        tournament.refresh_pairs_already_played()
+        return tournament
 
     def __repr__(self):
         repr = f"{self.name} - {self.location} - {self.date} - state : {self.state()} \n"

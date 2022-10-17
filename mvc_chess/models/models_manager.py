@@ -1,116 +1,57 @@
 import random
+from tinydb import TinyDB
 from mvc_chess.models.player import Player
 from mvc_chess.models.tournament import Tournament
+import mvc_chess.models.demo_funcs as demo
 
 
 class ModelsManager:
-    players = []
-    tournaments = []
+    _db_player = TinyDB("db_player.json")
+    _db_tournament = TinyDB("db_tournament.json")
 
-    @classmethod
-    def demo(cls):
-        # Players
-        players = [
-            Player("echecs", "joueur 1", "01/02/1999", "Autre", random.randint(10, 80) * 10),
-            Player("echecs", "joueur 2", "02/02/1999", "Autre", random.randint(10, 80) * 10),
-            Player("echecs", "joueur 3", "03/02/1999", "Autre", random.randint(10, 80) * 10),
-            Player("echecs", "joueur 4", "04/02/1999", "Autre", random.randint(10, 80) * 10),
-            Player("echecs", "joueur 5", "05/02/1999", "Autre", random.randint(10, 80) * 10),
-            Player("echecs", "joueur 6", "06/02/1999", "Autre", random.randint(10, 80) * 10),
-            Player("echecs", "joueur 7", "07/02/1999", "Autre", random.randint(10, 80) * 10),
-            Player("echecs", "joueur 8", "08/02/1999", "Autre", random.randint(10, 80) * 10),
-        ]
+    def __init__(self):
+        self.players = []
+        self.tournaments = []
+        self.load()
 
-        for player_id, player_instance in enumerate(players):
-            player_instance.set_id(player_id)
+    def save(self):
+        serialized_players = []
+        for player in self.players:
+            serialized_player = player.serialize()
+            serialized_players.append(serialized_player)
+        ModelsManager._db_player.truncate()
+        ModelsManager._db_player.insert_multiple(serialized_players)
 
-        ModelsManager.players.extend(players)
+        serialized_tournaments = []
+        for tournament in self.tournaments:
+            serialized_tournament = tournament.serialize()
+            serialized_tournaments.append(serialized_tournament)
+        ModelsManager._db_tournament.truncate()
+        ModelsManager._db_tournament.insert_multiple(serialized_tournaments)
 
-        # Tournois
-        # Tournoi - non démarré
-        tournament_datas = {
-            'name': 'Tournoi Régional 1',
-            'location': 'Paris',
-            'date': '24/03/2021',
-            'time_control': 'Bullet',
-            'description': 'Tournoi régional de paris junior',
-        }
-        tournament_instance = Tournament(**tournament_datas)
-        ModelsManager.tournaments.append(tournament_instance)
-        tournament_instance.set_id(0)
+    def load(self):
+        self.players = []
+        serialized_players = ModelsManager._db_player.all()
+        for player_id, serialized_player in enumerate(serialized_players):
+            player = Player.deserialize(serialized_player)
+            player.set_id(player_id)
+            self.players.append(player)
 
-        # Tournoi - démarré 7/8 joueurs
-        tournament_datas = {
-            'name': 'Tournoi National 1',
-            'location': 'Paris',
-            'date': '14/06/2021',
-            'time_control': 'Bullet',
-            'description': 'Tournoi national de paris senior',
-        }
-        tournament_instance = Tournament(**tournament_datas)
-        ModelsManager.tournaments.append(tournament_instance)
-        tournament_instance.set_id(1)
+        self.tournaments = []
+        serialized_tournaments = ModelsManager._db_tournament.all()
+        for tournament_id, serialized_tournament in enumerate(serialized_tournaments):
+            tournament = Tournament.deserialize(serialized_tournament)
+            tournament.set_id(tournament_id)
+            self.tournaments.append(tournament)
 
-        for player in players[:7]:
-            tournament_instance.add_player(player)
+    def demo_db(self, keep):
+        if not keep:
+            self.players = []
+            self.tournaments = []
+            demo.append_players(self)
+            demo.append_tournament_1(self)
+            demo.append_tournament_2(self)
 
-        # Tournoi - démarré 8/8 joueurs Tour 1 juste démarré
-        tournament_datas = {
-            'name': 'Tournoi National 2',
-            'location': 'Paris',
-            'date': '14/06/2022',
-            'time_control': 'Bullet',
-            'description': 'Tournoi national de paris senior',
-        }
-        tournament_instance = Tournament(**tournament_datas)
-        ModelsManager.tournaments.append(tournament_instance)
-        tournament_instance.set_id(2)
+            self.save()
 
-        for player in players[:8]:
-            tournament_instance.add_player(player)
-
-        tournament_instance.begin_next_turn()
-
-        # Tournoi - démarré 8/8 joueurs Tour 1 complet / Tour 2 juste démarré
-        tournament_datas = {
-            'name': 'Tournoi National 2',
-            'location': 'Paris',
-            'date': '14/06/2022',
-            'time_control': 'Bullet',
-            'description': 'Tournoi national de paris senior',
-        }
-        tournament_instance = Tournament(**tournament_datas)
-        ModelsManager.tournaments.append(tournament_instance)
-        tournament_instance.set_id(3)
-
-        for player in players[:8]:
-            tournament_instance.add_player(player)
-
-        tournament_instance.begin_next_turn()
-
-        for match in tournament_instance.get_matchs():
-            match.set_score("first")
-
-        tournament_instance.end_current_turn()
-
-        # Tournoi - démarré 8/8 joueurs Dernier tour à finir
-        tournament_datas = {
-            'name': 'Tournoi National 2',
-            'location': 'Paris',
-            'date': '14/06/2022',
-            'time_control': 'Bullet',
-            'description': 'Tournoi national de paris senior',
-        }
-        tournament_instance = Tournament(**tournament_datas)
-        ModelsManager.tournaments.append(tournament_instance)
-        tournament_instance.set_id(4)
-
-        for player in players[:8]:
-            tournament_instance.add_player(player)
-
-        for i in range(tournament_instance.number_tours-1):
-            tournament_instance.begin_next_turn()
-            for match in tournament_instance.get_current_turn().matchs:
-                match.set_score("first")
-
-            tournament_instance.end_current_turn()
+        self.load()
