@@ -1,4 +1,5 @@
 from mvc_chess.views.tournament_view import TournamentView
+from mvc_chess.models.tournament import Tournament
 
 
 class TournamentController:
@@ -8,6 +9,9 @@ class TournamentController:
         choice = TournamentView.tournament_list_view(tournaments)
 
         match choice:
+            case "1":
+                next_route = "tournament_create"
+                next_params = None
             case "2" | "3":
                 try:
                     tournament_id = int(input("Tournament id : "))
@@ -32,6 +36,25 @@ class TournamentController:
             case _:
                 next_route = "tournament_list"
                 next_params = None
+
+        return next_route, next_params
+
+    @classmethod
+    def tournament_create(cls, models_manager, route_params=None):
+        datas = TournamentView.tournament_create_view()
+
+        if Tournament.is_valid(**datas):
+            all_tournaments = models_manager.tournaments
+            datas["id"] = len(all_tournaments)
+            new_tournament = Tournament(**datas)
+            all_tournaments.append(new_tournament)
+            models_manager.save()
+
+            next_route = "tournament_read"
+            next_params = {"id": new_tournament.id}
+        else:
+            next_route = "tournament_list"
+            next_params = None
 
         return next_route, next_params
 

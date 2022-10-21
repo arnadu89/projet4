@@ -12,6 +12,7 @@ class Application:
         "player_create": PlayerController.player_create,
         "player_update": PlayerController.player_update,
         "tournament_list": TournamentController.tournament_list,
+        "tournament_create": TournamentController.tournament_create,
         "tournament_read": TournamentController.tournament_read,
         "tournament_manage": TournamentController.tournament_manage,
         "tournament_assign_player": TournamentController.tournament_assign_player,

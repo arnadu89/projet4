@@ -8,8 +8,8 @@ class Match:
         "draw"
     ]
 
-    def __init__(self, players_pair):
-        self.players = players_pair
+    def __init__(self, player_1, player_2):
+        self.players = player_1, player_2
         self.scores = [0, 0]
 
     def get_first_player(self):
@@ -64,7 +64,7 @@ class Match:
             Player.deserialize(serialized_player)
             for serialized_player in serialized_match["players"]
         ]
-        match = Match(deserialized_players)
+        match = Match(*deserialized_players)
         match.scores = serialized_match["scores"]
         return match
 

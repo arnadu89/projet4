@@ -22,13 +22,13 @@ class Turn:
                 return False
         return True
 
-    def create_match(self, players_pair):
-        match = Match(players_pair)
+    def create_match(self, player_1, player_2):
+        match = Match(player_1, player_2)
         self.matchs.append(match)
 
     def create_matches(self, players_pairs):
         for players_pair in players_pairs:
-            self.create_match(players_pair)
+            self.create_match(*players_pair)
 
     def set_match_score(self, match_index, score):
         match = self.matchs[match_index]

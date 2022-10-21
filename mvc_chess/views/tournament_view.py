@@ -27,6 +27,18 @@ class TournamentView:
         return input("Choice : ")
 
     @classmethod
+    def tournament_create_view(cls):
+        print("-- MVC Chess --\n")
+        print("-- Create a new tournament :")
+        return {
+            "name": input("Name : "),
+            "location": input("Location : "),
+            "date": input("Date : "),
+            "time_control": input("Time control : "),
+            "description": input("Description : "),
+        }
+
+    @classmethod
     def tournament_read_view(cls, tournament,
                              show_players=True,
                              show_turns=True,

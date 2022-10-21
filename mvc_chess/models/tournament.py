@@ -9,25 +9,25 @@ class Tournament:
         "IN_PROGRESS": "En cours",
         "FINISHED": "Terminé"
     }
-    time_control = [
+    time_controls = [
         "Bullet",
         "Blitz",
         "Coup rapide"
     ]
     number_players = 8
 
-    def __init__(self,
+    def __init__(self, id,
                  name, location, date,
                  time_control, description,
                  number_turns=4
                  ):
-        self.id = None
+        self.id = id
         self.name = name
         self.location = location
         self.date = date
         self.players = []
         self.turns = []
-        self.scores = []
+        self.scores = [] # todo : transform to id dict
         self._time_control = time_control
         self.description = description
         self.number_turns = number_turns
@@ -39,7 +39,7 @@ class Tournament:
 
     @time_control.setter
     def time_control(self, value):
-        if value in Tournament.time_control:
+        if value in Tournament.time_controls:
             self.time_control = value
 
     def add_player(self, new_player):
@@ -164,11 +164,12 @@ class Tournament:
 
     def serialize(self):
         serialized_tournament = {
+            "id": self.id,
             "name": self.name,
             "location": self.location,
             "date": self.date,
             "players": [
-                player.serialize() for player in self.players
+                player.id for player in self.players
             ],
             "turns": [
                 turn.serialize() for turn in self.turns
@@ -181,8 +182,9 @@ class Tournament:
         return serialized_tournament
 
     @classmethod
-    def deserialize(cls, serialized_tournament):
+    def deserialize(cls, serialized_tournament, players):
         tournament = Tournament(
+            serialized_tournament["id"],
             serialized_tournament["name"],
             serialized_tournament["location"],
             serialized_tournament["date"],
@@ -191,9 +193,9 @@ class Tournament:
             serialized_tournament["number_turns"]
         )
 
-        for serialized_player in serialized_tournament["players"]:
-            deserialized_player = Player.deserialize(serialized_player)
-            tournament.add_player(deserialized_player)
+        for player_id in serialized_tournament["players"]:
+            player = next(player for player in players if player.id == player_id)
+            tournament.add_player(player)
 
         for serialized_turn in serialized_tournament["turns"]:
             deserialized_turn = Turn.deserialize(serialized_turn)
@@ -202,6 +204,15 @@ class Tournament:
         tournament.update_scores()
         tournament.refresh_pairs_already_played()
         return tournament
+
+    @classmethod
+    def is_valid(cls, name, location, date,
+                 time_control, description):
+        if not name or not location or not date:
+            return False
+        if time_control not in Tournament.time_controls:
+            return False
+        return True
 
     def __repr__(self):
         repr = f"{self.name} - {self.location} - {self.date} - state : {self.state()} \n"

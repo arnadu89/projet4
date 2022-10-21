@@ -40,7 +40,7 @@ class ModelsManager:
         self.tournaments = []
         serialized_tournaments = ModelsManager._db_tournament.all()
         for tournament_id, serialized_tournament in enumerate(serialized_tournaments):
-            tournament = Tournament.deserialize(serialized_tournament)
+            tournament = Tournament.deserialize(serialized_tournament, self.players)
             tournament.set_id(tournament_id)
             self.tournaments.append(tournament)
 
@@ -49,9 +49,12 @@ class ModelsManager:
             self.players = []
             self.tournaments = []
             demo.append_players(self)
+            self.save()
             demo.append_tournament_1(self)
+            self.save()
             demo.append_tournament_2(self)
-
+            self.save()
+            demo.append_tournament_5(self)
             self.save()
 
         self.load()
