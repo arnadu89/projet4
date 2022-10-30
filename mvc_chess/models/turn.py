@@ -46,10 +46,10 @@ class Turn:
         return serialized_turn
 
     @classmethod
-    def deserialize(cls, serialized_turn):
+    def deserialize(cls, serialized_turn, players):
         turn = Turn(serialized_turn["name"])
         turn.matchs = [
-            Match.deserialize(serialized_match)
+            Match.deserialize(serialized_match, players)
             for serialized_match in serialized_turn["matchs"]
         ]
         turn.start_date_time = serialized_turn["start_date_time"]

@@ -80,16 +80,29 @@ class PlayerController:
     @classmethod
     def player_update(cls, models_manager, route_params=None):
         player = models_manager.players[route_params["id"]]
-        input_player_update_datas = PlayerView.player_update_view(player)
-        # todo : validating datas of updated player with is_valid method on player model object
+        datas = PlayerView.player_update_view(player)
 
-        # updated_datas = dict(player.__dict__)
-        # print(f"Updated datas = {updated_datas}")
-        #
-        # updated_datas.update(input_player_update_datas)
-        # updated_player = Player(**updated_datas)
-        # print(updated_player)
+        # Fill with original player data if updated data is empty
+        updated_datas = {}
+        for key, value in datas.items():
+            if value == "":
+                updated_datas[key] = getattr(player, key)
+            else:
+                updated_datas[key] = value
 
-        next_route = "player_list"
-        next_params = None
+        if Player.is_valid(**updated_datas):
+            player.lastname = updated_datas["lastname"]
+            player.firstname = updated_datas["firstname"]
+            player.birthdate = updated_datas["birthdate"]
+            player.gender = updated_datas["gender"]
+            player.rank = int(updated_datas["rank"])
+
+            models_manager.save()
+
+            next_route = "player_list"
+            next_params = None
+        else:
+            next_route = "player_list"
+            next_params = {"message": f"Error during updating player with id {player.id}"}
+
         return next_route, next_params

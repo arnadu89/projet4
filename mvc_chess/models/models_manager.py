@@ -1,4 +1,3 @@
-import random
 from tinydb import TinyDB
 from mvc_chess.models.player import Player
 from mvc_chess.models.tournament import Tournament

@@ -1,5 +1,4 @@
 import mvc_chess.models.turn as turn
-from mvc_chess.models.player import Player
 from mvc_chess.models.turn import Turn
 
 
@@ -27,7 +26,7 @@ class Tournament:
         self.date = date
         self.players = []
         self.turns = []
-        self.scores = [] # todo : transform to id dict
+        self.scores = []
         self._time_control = time_control
         self.description = description
         self.number_turns = number_turns
@@ -124,11 +123,14 @@ class Tournament:
                     player_score += match.get_score_first_player()
                 elif player is match.get_second_player():
                     player_score += match.get_score_second_player()
-            self.scores.append((player, player_score))
+            self.scores.append({
+                "player_id": player.id,
+                "player_score": player_score,
+            })
 
     def get_player_score(self, player):
-        player_score = [score for score in self.scores if score[0] is player]
-        return player_score[0][1] if player_score else 0
+        player_score = [score for score in self.scores if score["player_id"] == player.id]
+        return player_score[0]["player_score"] if player_score else 0
 
     def get_players_by_name(self):
         return sorted(self.players, key=lambda p: p.nom)
@@ -198,7 +200,7 @@ class Tournament:
             tournament.add_player(player)
 
         for serialized_turn in serialized_tournament["turns"]:
-            deserialized_turn = Turn.deserialize(serialized_turn)
+            deserialized_turn = Turn.deserialize(serialized_turn, players)
             tournament.turns.append(deserialized_turn)
 
         tournament.update_scores()
