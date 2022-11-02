@@ -1,4 +1,6 @@
-Pour générer le rapport html flake8 dans le dossier du projet lancer :
+# todo
+
+Pour générer le rapport flake8 au format html dans le dossier flake8_rapport du projet :
 ```
-flake8 --format=html --htmldir=./flake8_rapport --max-line-length 119 --exclude venv/
+flake8
 ```

@@ -1,5 +1,5 @@
 import subprocess
-from models import models_manager
+from mvc_chess.models import models_manager
 from mvc_chess.controllers.main_menu_controller import MainMenuController
 from mvc_chess.controllers.player_controller import PlayerController
 from mvc_chess.controllers.tournament_controller import TournamentController
