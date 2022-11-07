@@ -1,3 +1,6 @@
 /venv
 .idea/
 /flake8_rapport
+__pycache__/
+maquette.txt
+db_*.json
