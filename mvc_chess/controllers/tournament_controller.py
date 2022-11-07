@@ -329,6 +329,7 @@ class TournamentController:
 
                 next_route = "tournament_manage"
                 next_params = {"id": tournament.id}
+                tournament.update_score()
                 models_manager.save()
 
         return next_route, next_params
