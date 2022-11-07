@@ -1,7 +1,6 @@
 from tinydb import TinyDB
 from mvc_chess.models.player import Player
 from mvc_chess.models.tournament import Tournament
-import mvc_chess.models.demo_funcs as demo
 
 
 class ModelsManager:
@@ -42,18 +41,3 @@ class ModelsManager:
             tournament = Tournament.deserialize(serialized_tournament, self.players)
             tournament.set_id(tournament_id)
             self.tournaments.append(tournament)
-
-    def demo_db(self, keep):
-        if not keep:
-            self.players = []
-            self.tournaments = []
-            demo.append_players(self)
-            self.save()
-            demo.append_tournament_1(self)
-            self.save()
-            demo.append_tournament_2(self)
-            self.save()
-            demo.append_tournament_5(self)
-            self.save()
-
-        self.load()
