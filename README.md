@@ -6,7 +6,7 @@ Cloner le projet.
 
 Dans le dossier du projet, créer l'environnement virtuel :
 ```
-python -m venv 
+python -m venv venv
 ```
 
 Activer l'environnement virtuel :
