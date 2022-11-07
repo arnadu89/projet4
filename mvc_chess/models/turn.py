@@ -34,6 +34,16 @@ class Turn:
         match = self.matchs[match_index]
         match.set_score(score)
 
+    def get_match_by_index(self, match_index):
+        try:
+            match = self.matchs[match_index]
+        except IndexError:
+            return None
+        except TypeError:
+            return None
+
+        return match
+
     def serialize(self):
         serialized_turn = {
             "name": self.name,

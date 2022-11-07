@@ -1,7 +1,10 @@
+from mvc_chess.views.base_view import BaseView
+
+
 class PlayerView:
     @classmethod
     def player_list_view(cls, players, message=None):
-        print("-- MVC Chess --\n")
+        BaseView.base_view()
         if message:
             print(message)
 
@@ -30,7 +33,7 @@ class PlayerView:
 
     @classmethod
     def player_create_view(cls):
-        print("-- MVC Chess --\n")
+        BaseView.base_view()
         print("-- Create a new player :")
         return {
             "lastname": input("Lastname : "),
@@ -42,7 +45,7 @@ class PlayerView:
 
     @classmethod
     def player_update_view(cls, player):
-        print("-- MVC Chess --\n")
+        BaseView.base_view()
         print("-- Update a player :")
         print(f"Player ID is : {player.id}")
         return {

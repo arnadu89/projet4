@@ -4,13 +4,9 @@ from mvc_chess.models.player import Player
 
 class PlayerController:
     @classmethod
-    def player_list(cls, models_manager, route_params=None):
+    def player_list(cls, models_manager, route_params={}):
         players = models_manager.players
-        try:
-            if "message" in route_params.keys():
-                message = route_params["message"]
-        except AttributeError:
-            message = None
+        message = route_params.get("message")
 
         if route_params and "player_sort" in route_params:
             player_sort = route_params["player_sort"]
@@ -24,7 +20,7 @@ class PlayerController:
 
         choice = PlayerView.player_list_view(players, message)
         choice = choice.lower()
-        next_params = None
+        next_params = {}
 
         match choice:
             case "1":
@@ -51,13 +47,13 @@ class PlayerController:
             case "q":
                 next_route = "quit"
             case _:
-                print("Error : Invalid parameter")
                 next_route = "player_list"
+                next_params = {"message": "Invalid choice"}
 
         return next_route, next_params
 
     @classmethod
-    def player_create(cls, models_manager, route_params=None):
+    def player_create(cls, models_manager, route_params={}):
         datas = PlayerView.player_create_view()
 
         if Player.is_valid(**datas):
@@ -70,7 +66,7 @@ class PlayerController:
             models_manager.save()
 
             next_route = "player_list"
-            next_params = None
+            next_params = {}
         else:
             next_route = "player_list"
             next_params = {"message": "Error during player creation"}
@@ -78,31 +74,45 @@ class PlayerController:
         return next_route, next_params
 
     @classmethod
-    def player_update(cls, models_manager, route_params=None):
-        player = models_manager.players[route_params["id"]]
-        datas = PlayerView.player_update_view(player)
-
-        # Fill with original player data if updated data is empty
-        updated_datas = {}
-        for key, value in datas.items():
-            if value == "":
-                updated_datas[key] = getattr(player, key)
-            else:
-                updated_datas[key] = value
-
-        if Player.is_valid(**updated_datas):
-            player.lastname = updated_datas["lastname"]
-            player.firstname = updated_datas["firstname"]
-            player.birthdate = updated_datas["birthdate"]
-            player.gender = updated_datas["gender"]
-            player.rank = int(updated_datas["rank"])
-
-            models_manager.save()
-
+    def player_update(cls, models_manager, route_params={}):
+        player_id = route_params.get("id")
+        player = PlayerController._get_player_by_id(models_manager, player_id)
+        if player is None:
             next_route = "player_list"
-            next_params = None
+            next_params = {"message": f"Error during updating player with id {player_id}"}
         else:
-            next_route = "player_list"
-            next_params = {"message": f"Error during updating player with id {player.id}"}
+            datas = PlayerView.player_update_view(player)
+
+            # Fill with original player data if updated data is empty
+            updated_datas = {}
+            for key, value in datas.items():
+                if value == "":
+                    updated_datas[key] = getattr(player, key)
+                else:
+                    updated_datas[key] = value
+
+            if Player.is_valid(**updated_datas):
+                player.lastname = updated_datas["lastname"]
+                player.firstname = updated_datas["firstname"]
+                player.birthdate = updated_datas["birthdate"]
+                player.gender = updated_datas["gender"]
+                player.rank = int(updated_datas["rank"])
+
+                models_manager.save()
+
+                next_route = "player_list"
+                next_params = {}
+            else:
+                next_route = "player_list"
+                next_params = {"message": f"Error during updating player with id {player.id}"}
 
         return next_route, next_params
+
+    @classmethod
+    def _get_player_by_id(cls, models_manager, player_id):
+        try:
+            player = models_manager.players[player_id]
+        except IndexError:
+            return None
+
+        return player

@@ -21,24 +21,24 @@ class Application:
 
     def __init__(self):
         self.route = "main_menu"
-        self.route_params = None
+        self.route_params = {}
         self.exit = False
 
     def run(self):
-        # loading ModelsManager
-        mm = models_manager.ModelsManager()
-        # mm.demo()
+        models_manager_instance = models_manager.ModelsManager()
 
         keep = input("Keep data ? : ")
-        mm.demo_db(int(keep))
+        models_manager_instance.demo_db(int(keep))
 
         while not self.exit:
             subprocess.call("clear", shell=True)
+            print(f"route is : {self.route}")
+            print(f"route_params is : {self.route_params}")
 
             controller_method = self.routes[self.route]
 
             next_route, next_params = controller_method(
-                mm,
+                models_manager_instance,
                 self.route_params
             )
 

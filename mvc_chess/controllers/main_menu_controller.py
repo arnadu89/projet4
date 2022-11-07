@@ -17,4 +17,4 @@ class MainMenuController:
                 print("Error : Invalid parameter")
                 next_route = "main_menu"
 
-        return next_route, None
+        return next_route, {}

@@ -1,10 +1,13 @@
 import mvc_chess.views.player_view as player_view
+from mvc_chess.views.base_view import BaseView
 
 
 class TournamentView:
     @classmethod
-    def tournament_list_view(cls, tournaments):
-        print("-- MVC Chess --\n")
+    def tournament_list_view(cls, tournaments, message=None):
+        BaseView.base_view()
+        if message:
+            print(message)
 
         print("-- Tournaments list :")
         if not tournaments:
@@ -28,7 +31,7 @@ class TournamentView:
 
     @classmethod
     def tournament_create_view(cls):
-        print("-- MVC Chess --\n")
+        BaseView.base_view()
         print("-- Create a new tournament :")
         return {
             "name": input("Name : "),
@@ -43,7 +46,7 @@ class TournamentView:
                              show_players=True,
                              show_turns=True,
                              show_matchs=True):
-        print("-- MVC Chess --\n")
+        BaseView.base_view()
 
         print("-- Tournament detail :")
         print(f"Name : {tournament.name} - Location : {tournament.location} - Date : {tournament.date}")
@@ -78,7 +81,6 @@ class TournamentView:
         print("3. View this tournament with players sorted by rank")
         print("4. View this tournament without matchs (only turns)")
         print("5. Manage this tournament")
-        print("M. Main menu")
         return input("Choice : ")
 
     @classmethod
@@ -105,46 +107,38 @@ class TournamentView:
         print(f"Tournament : {tournament.name} - {tournament.location} - {tournament.date}")
 
     @classmethod
-    def tournament_manage_with_not_all_players_view(cls, tournament):
-        print("-- MVC Chess --\n")
+    def tournament_manage_base_view(cls, tournament, message=None):
+        BaseView.base_view()
+        if message:
+            print(message, "\n")
+
         TournamentView._tournament_display(tournament)
 
+    @classmethod
+    def tournament_manage_with_not_all_players_view(cls, tournament):
         print("\nYou must add player to start tournament")
         print("\n")
         print("1. List tournaments")
         print("2. Add player")
-        print("M. Main menu")
-        print("Q. Quit")
         return input("Choice : ")
 
     @classmethod
     def tournament_manage_not_started_view(cls, tournament):
-        print("-- MVC Chess --\n")
-        TournamentView._tournament_display(tournament)
-
         print("\nYou can now start tournament")
         print("\n")
         print("1. List tournaments")
         print("2. Start tournament")
-        print("M. Main menu")
         return input("Choice : ")
 
     @classmethod
     def tournament_manage_started_waiting_next_turn(cls, tournament):
-        print("-- MVC Chess --\n")
-        TournamentView._tournament_display(tournament)
-
         print("\n")
         print("1. List tournaments")
         print("2. Begin next turn")
-        print("M. Main menu")
         return input("Choice : ")
 
     @classmethod
     def tournament_manage_started_turn_in_progress_view(cls, tournament):
-        print("-- MVC Chess --\n")
-        TournamentView._tournament_display(tournament)
-
         print("\n")
         print("1. List tournaments")
         for match_index, match in enumerate(tournament.get_current_turn().matchs):
@@ -152,22 +146,17 @@ class TournamentView:
                 print(f"{match_index + 2}. Set result for the match {match_index + 1}")
         if tournament.get_current_turn().is_all_matchs_finish():
             print("6. Mark current turn as finish")
-        print("M. Main menu")
         return input("Choice : ")
 
     @classmethod
     def tournament_manage_finished(cls, tournament):
-        print("-- MVC Chess --\n")
-        TournamentView._tournament_display(tournament)
-
         print("\n")
         print("1. List tournaments")
-        print("M. Main menu")
         return input("Choice : ")
 
     @classmethod
     def tournament_assign_player_view(cls, tournament, players):
-        print("-- MVC Chess --\n")
+        BaseView.base_view()
         TournamentView._tournament_display_short(tournament)
 
         if not players:
@@ -182,7 +171,7 @@ class TournamentView:
 
     @classmethod
     def tournament_valid_match(cls, tournament, match):
-        print("-- MVC Chess --\n")
+        BaseView.base_view()
         TournamentView._tournament_display_short(tournament)
 
         print(match)
