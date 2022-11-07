@@ -10,7 +10,7 @@ class PlayerView:
 
         print("-- Players list :")
         if not players:
-            print("Aucun joueur dans la base")
+            print("No player in the base")
         else:
             print("ID\tLastname\t\t\tFirstname\t\t\tBirthdate\t\t\tRank")
             for player in players:
@@ -39,8 +39,8 @@ class PlayerView:
             "lastname": input("Lastname : "),
             "firstname": input("Firstname : "),
             "birthdate": input("Birthdate : "),
-            "gender": input("Gender : "),
-            "rank": input("Rank : "),
+            "gender": input("Gender [Autre | Femme | Homme]: "),
+            "rank": input("Rank [must be an integer]: "),
         }
 
     @classmethod

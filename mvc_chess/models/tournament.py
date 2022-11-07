@@ -11,7 +11,7 @@ class Tournament:
     time_controls = [
         "Bullet",
         "Blitz",
-        "Coup rapide"
+        "Rapid"
     ]
     number_players = 8
 

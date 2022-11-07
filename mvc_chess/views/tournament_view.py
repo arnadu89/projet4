@@ -11,7 +11,7 @@ class TournamentView:
 
         print("-- Tournaments list :")
         if not tournaments:
-            print("Aucun tournoi dans la base")
+            print("No tournament in the base")
         else:
             print("ID\tName\t\t\tLocation\t\t\tDate\t\t\tPlayers\t\t\tState")
             for tournament in tournaments:
@@ -37,7 +37,7 @@ class TournamentView:
             "name": input("Name : "),
             "location": input("Location : "),
             "date": input("Date : "),
-            "time_control": input("Time control : "),
+            "time_control": input("Time control [Bullet | Blitz | Rapid]: "),
             "description": input("Description : "),
         }
 
