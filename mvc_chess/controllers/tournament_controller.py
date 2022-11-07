@@ -136,7 +136,8 @@ class TournamentController:
                     models_manager,
                     tournament
                 )
-            elif tournament.state() == tournament.states["IN_PROGRESS"] and not tournament.get_current_turn().is_finish():
+            elif tournament.state() == tournament.states["IN_PROGRESS"] and\
+                    not tournament.get_current_turn().is_finish():
                 # Manage started tournament - current turn not finish
                 next_route, next_params = TournamentController._manage_tournament_started_turn_in_progress(
                     models_manager,
@@ -150,7 +151,7 @@ class TournamentController:
                 )
             else:
                 next_route = "tournament_list"
-                next_params = {f"message": f"Error : Tournament with id {tournament.id} is not suitable for management"}
+                next_params = {"message": f"Error : Tournament with id {tournament.id} is not suitable for management"}
 
         return next_route, next_params
 
