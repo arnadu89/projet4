@@ -29,8 +29,6 @@ class Application:
 
         while not self.exit:
             subprocess.call("clear", shell=True)
-            print(f"route is : {self.route}")
-            print(f"route_params is : {self.route_params}")
 
             controller_method = self.routes[self.route]
 
