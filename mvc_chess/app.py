@@ -27,6 +27,9 @@ class Application:
     def run(self):
         models_manager_instance = models_manager.ModelsManager()
 
+        keep = input("Keep data ? : ")
+        models_manager_instance.demo_db(int(keep))
+
         while not self.exit:
             subprocess.call("clear", shell=True)
             print(f"route is : {self.route}")
