@@ -4,9 +4,9 @@ from mvc_chess.models.turn import Turn
 
 class Tournament:
     states = {
-        "NOT_STARTED": "Non démarré",
-        "IN_PROGRESS": "En cours",
-        "FINISHED": "Terminé"
+        "NOT_STARTED": "Not started",
+        "IN_PROGRESS": "In progress",
+        "FINISHED": "Finished"
     }
     time_controls = [
         "Bullet",
